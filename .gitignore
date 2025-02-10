@@ -1,2 +1,17 @@
+# Ignorar archivos de variables de Terraform
+terraform.tfvars
+*.tfvars
+*.tfvars.json
+
+# Ignorar archivos de estado de Terraform
+*.tfstate
+*.tfstate.*
+
+# Ignorar directorio de plugins y caché de Terraform
+.terraform/
+
+# Ignorar archivo de variables de entorno
 .env
-node_modules
+
+# Ignorar node_modules (si es un proyecto con Node.js)
+node_modules/
