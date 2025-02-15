@@ -1,8 +1,7 @@
 import { DockerImageTag } from "../docker/interfaces/docker-types";
 
 export const DOCKER_MESSAGES = {
-  IMAGE_INFO: (image: DockerImageTag): string => {
-    return `🐳 *Información de la Imagen*
+  IMAGE_INFO: (image: DockerImageTag): string => { return `🐳 *Información de la Imagen*
 ───────────────
 🆔 *Id:* ${image.id}
 🏛️ *Repositorio id:* ${image.repository}
