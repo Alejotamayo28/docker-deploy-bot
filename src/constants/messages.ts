@@ -11,4 +11,7 @@ export const DOCKER_MESSAGES = {
 👤 *Actualizado por:* ${image.last_updater_username}
 🏷️ *Estado:* ${image.tag_status}`;
   },
+  IMAGE_ACTION_PROMPT: (imageId: string) => {
+    return `¿Qué te gustaría hacer con la imagen ${imageId}?`
+  }
 };
