@@ -2,14 +2,13 @@ import { bot } from "../..";
 import { DOCKER_MESSAGES } from "../../constants/messages";
 import { DockerEngineClient } from "../../docker/clients/docker-engine-client";
 import { DockerImageTag } from "../../docker/interfaces/docker-types";
-import { setupStartCommand } from "../commands/start.commands";
 
 export async function setUpDockerImageHandler(images: DockerImageTag[]) {
   bot.action(/^select_image:(\d+)$/, async (ctx) => {
     try {
       const imageId = ctx.match[1];
       await ctx.answerCbQuery(`Imagen seleccionada: ${imageId}`);
-      await ctx.reply(`Que te gustaria hacer con la imagen: ${imageId}`, {
+      await ctx.reply(DOCKER_MESSAGES.IMAGE_ACTION_PROMPT(imageId), {
         reply_markup: {
           inline_keyboard: [
             [
@@ -37,7 +36,7 @@ export async function setUpDockerImageHandler(images: DockerImageTag[]) {
       await ctx.deleteMessage(message01.message_id);
       await ctx.reply(`🚀 Contenedor: ${imageInfo?.name}\nEn ejecucion.`);
       return await ctx.reply(
-        `Que te gustaria hacer con la imagen: ${imageId}`,
+        DOCKER_MESSAGES.IMAGE_ACTION_PROMPT(imageId),
         {
           reply_markup: {
             inline_keyboard: [
