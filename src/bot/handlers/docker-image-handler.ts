@@ -28,7 +28,7 @@ export async function setUpDockerImageHandler(images: DockerImageTag[]) {
     try {
       const imageId = ctx.match[1];
       await ctx.answerCbQuery();
-      const message01 = await ctx.reply(`Ejecutando imagen: ${imageId}...`);
+      const message01 = await ctx.reply(DOCKER_MESSAGES.IMAGE_EXECUTING(imageId));
       const imageInfo = images.find((image: DockerImageTag) => {
         return image.id == Number(imageId);
       });
