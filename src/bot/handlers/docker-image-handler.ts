@@ -34,7 +34,7 @@ export async function setUpDockerImageHandler(images: DockerImageTag[]) {
       });
       await dockerEngine.runContainer(imageInfo!);
       await ctx.deleteMessage(message01.message_id);
-      await ctx.reply(`🚀 Contenedor: ${imageInfo?.name}\nEn ejecucion.`);
+      await ctx.reply(DOCKER_MESSAGES.IMAGE_ON_EXECUTION(imageInfo!.name))
       return await ctx.reply(
         DOCKER_MESSAGES.IMAGE_ACTION_PROMPT(imageId),
         {
