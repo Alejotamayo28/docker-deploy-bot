@@ -14,6 +14,9 @@ export const DOCKER_MESSAGES = {
   IMAGE_ACTION_PROMPT: (imageId: string) => {
     return `¿Qué te gustaría hacer con la imagen ${imageId}?`
   },
+  IMAGE_EXECUTING: (imageId: string) => {
+    return `Ejecutando imagen: ${imageId}...`
+  },
   IMAGE_ON_EXECUTION: (imageName: string) => {
     return `🚀 Contenedor: ${imageName}\nEn ejecucion.`
   }
