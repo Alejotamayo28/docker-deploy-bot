@@ -1,4 +1,5 @@
 import { bot } from "../..";
+import { imagesLogo } from "../../config/images";
 import { DOCKER_MESSAGES } from "../../constants/messages";
 import { DockerEngineClient } from "../../docker/clients/docker-engine-client";
 import { DockerImageTag } from "../../docker/interfaces/docker-types";
@@ -67,10 +68,13 @@ export async function setUpDockerImageHandler(images: DockerImageTag[]) {
       const imageInfo = images.find((image: DockerImageTag) => {
         return image.id == Number(imageId);
       });
-      console.log("Images: ", imageInfo);
-      return await ctx.reply(DOCKER_MESSAGES.IMAGE_INFO(imageInfo!), {
+      await ctx.reply(DOCKER_MESSAGES.IMAGE_INFO(imageInfo!), {
         parse_mode: "Markdown",
       });
+      return await ctx.replyWithPhoto({
+        url: imagesLogo[imageInfo!.name],
+      }, { caption: "E-commerce" },
+      )
     } catch (error) {
       console.error("Error: ", error);
     }
