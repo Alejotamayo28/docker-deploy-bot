@@ -2,111 +2,39 @@ import { exec, spawn } from "child_process";
 import util from "util";
 import { DockerImageTag } from "../interfaces/docker-types";
 import { config } from "../../config/env.config";
-import {  imagesPort } from "../../config/images";
+import { imagesPort } from "../../config/images";
+import { DockerProcessHelper } from "./docker-process-helper";
 
 const execPromise = util.promisify(exec);
 
 export class DockerEngineClient {
   async runLogin(): Promise<void> {
     try {
-      return new Promise((resolve, reject) => {
-        const dockerLogin = spawn("sudo", [
-          "docker",
-          "login",
-          "-u",
-          config.DOCKER_USERNAME,
-          "--password-stdin",
-        ]);
-        let stdoutData = "";
-        let stderrData = "";
-        dockerLogin.stdin.write(`${config.DOCKER_PASSWORD}\n`);
-        dockerLogin.stdin.end();
-        dockerLogin.stdout.on("data", (data) => {
-          stdoutData += data.toString();
-        });
-        dockerLogin.stderr.on("data", (data) => {
-          stderrData += data.toString();
-        });
-        dockerLogin.on("close", (code) => {
-          if (stdoutData) console.log(`Stdout: `, stdoutData);
-          if (stderrData) console.log(`Stderr: `, stderrData);
-          if (code === 0) {
-            resolve();
-          } else {
-            reject(new Error(`Docker login failed with code ${code}`));
-          }
-        });
-      });
+      return await DockerProcessHelper.login(
+        config.DOCKER_USERNAME,
+        config.DOCKER_PASSWORD
+      )
     } catch (error) {
       console.error("Error: ", error);
+      throw error
     }
   }
-  async runDownloadImage(image: DockerImageTag): Promise<void> {
-    const args = ["pull", `${config.DOCKER_USERNAME}/projects:${image.name}`];
-    console.log(`Executing command: sudo docker ${args.join(" ")}`);
-    return new Promise((resolve, reject) => {
-      const dockerProcess = spawn("sudo", ["docker", ...args]);
-      let stdoutData = "";
-      let stderrData = "";
-      dockerProcess.stdout.on("data", (data) => {
-        stdoutData += data.toString();
-      });
-      dockerProcess.stderr.on("data", (data) => {
-        stderrData += data.toString();
-      });
-      dockerProcess.on("close", (code) => {
-        if (stdoutData) console.log(`Stdout: `, stdoutData);
-        if (stderrData) console.log(`Stderr: `, stderrData);
-        if (code === 0) {
-          resolve();
-        } else {
-          reject(new Error(`El contenedor falló con código ${code}`));
-        }
-      });
-      dockerProcess.on("error", (error) => {
-        console.error("Error al descargar el contenedor:", error);
-        reject(error);
-      });
-    });
+  async runDownloadImage(imageInfo: DockerImageTag): Promise<void> {
+    try {
+      return await DockerProcessHelper.pull(
+        imageInfo
+      )
+    } catch (error) {
+      console.error("Error: ", error)
+      throw error
+    }
   }
-  async runDownloadedImage(image: DockerImageTag): Promise<void> {
-    const port = imagesPort[image.name];
-    const args = [
-      "run",
-      "-d",
-      "-p",
-      `${port}:${port}`,
-      "--name",
-      image.name,
-      `${config.DOCKER_USERNAME}/projects:${image.name}`,
-    ];
-    console.log(`Executing command: sudo docker ${args.join(" ")}`);
-    return new Promise((resolve, reject) => {
-      const dockerProcess = spawn("sudo", ["docker", ...args]);
-      let stdoutData = "";
-      let stderrData = "";
-      dockerProcess.stdout.on("data", (data) => {
-        stdoutData += data.toString();
-      });
-      dockerProcess.stderr.on("data", (data) => {
-        stderrData += data.toString();
-      });
-      dockerProcess.on("close", (code) => {
-        if (stdoutData) console.log(`Stdout: `, stdoutData);
-        if (stderrData) console.log(`Stderr: `, stderrData);
-        if (code === 0) {
-          resolve();
-        } else {
-          reject(new Error(`El contenedor falló con código ${code}`));
-        }
-      });
-      dockerProcess.on("error", (error) => {
-        console.error("Error al correr el contenedor:", error);
-        reject(error);
-      });
-    });
+  async runDownloadedImage(imageInfo: DockerImageTag): Promise<void> {
+    const port = imagesPort[imageInfo.name];
+    return await DockerProcessHelper.downlaod(
+      port,
+      imageInfo)
   }
-
   async stopContainer(image: DockerImageTag): Promise<void> {
     try {
       const { stdout: containerId } = await execPromise(
