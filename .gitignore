@@ -10,6 +10,20 @@ terraform.tfvars
 # Ignorar directorio de plugins y caché de Terraform
 .terraform/
 
+
+# Docker
+.docker/
+docker-compose.override.yml
+.dockerignore
+
+# Volumenes de Docker
+data/
+tmp/ 
+
+# Imagenes y contenedores 
+*.tar
+*.img
+
 # Ignorar archivo de variables de entorno
 .env
 
