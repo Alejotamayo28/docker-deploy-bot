@@ -1,0 +1,8 @@
+services: 
+  bot:
+    build: .
+    image: dockerbot
+    container_name: dockerbot
+    restart: always
+    env_file:
+      - .env
