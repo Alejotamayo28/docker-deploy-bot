@@ -3,13 +3,14 @@ import { imagesLogo } from "../../config/images";
 import { DOCKER_MESSAGES } from "../../constants/messages";
 import { DockerEngineClient } from "../../docker/clients/docker-engine-client";
 import { DockerImageTag } from "../../docker/interfaces/docker-types";
+import { addMessage, deleteAllMessages } from "../messageCleaner";
 
 export async function setUpDockerImageHandler(images: DockerImageTag[]) {
   bot.action(/^select_image:(\d+)$/, async (ctx) => {
     try {
       const imageId = ctx.match[1];
       await ctx.answerCbQuery(`Imagen seleccionada: ${imageId}`);
-      await ctx.reply(DOCKER_MESSAGES.IMAGE_ACTION_PROMPT(imageId), {
+      const inlineMessage = await ctx.reply(DOCKER_MESSAGES.IMAGE_ACTION_PROMPT(imageId), {
         reply_markup: {
           inline_keyboard: [
             [
@@ -19,6 +20,7 @@ export async function setUpDockerImageHandler(images: DockerImageTag[]) {
           ],
         },
       });
+      addMessage(inlineMessage.message_id)
     } catch (error) {
       console.error("Error: ", error);
     }
@@ -26,6 +28,7 @@ export async function setUpDockerImageHandler(images: DockerImageTag[]) {
   const dockerEngine = new DockerEngineClient();
 
   bot.action(/^run_image:(\d+)$/, async (ctx) => {
+    await deleteAllMessages(ctx)
     try {
       const imageId = ctx.match[1];
       await ctx.answerCbQuery();
@@ -64,17 +67,18 @@ export async function setUpDockerImageHandler(images: DockerImageTag[]) {
     try {
       const imageId = ctx.match[1];
       await ctx.answerCbQuery();
-      await ctx.reply(`Informacion imagen: ${imageId}...`);
       const imageInfo = images.find((image: DockerImageTag) => {
         return image.id == Number(imageId);
       });
-      await ctx.reply(DOCKER_MESSAGES.IMAGE_INFO(imageInfo!), {
+      const infoMessage = await ctx.reply(`Informacion imagen: ${imageId}\n`
+        + DOCKER_MESSAGES.IMAGE_INFO(imageInfo!), {
         parse_mode: "Markdown",
       });
-      return await ctx.replyWithPhoto({
+      const photoMessage = await ctx.replyWithPhoto({
         url: imagesLogo[imageInfo!.name],
-      }, { caption: "E-commerce" },
-      )
+      }, { caption: "E-commerce" })
+      addMessage(infoMessage.message_id)
+      addMessage(photoMessage.message_id)
     } catch (error) {
       console.error("Error: ", error);
     }
