@@ -67,7 +67,7 @@ export async function setUpDockerImageHandler(images: DockerImageTag[]) {
       }, {
         caption:
           `Informacion imagen: ${imageId}\n` +
-          + DOCKER_MESSAGES.IMAGE_INFO(imageInfo!),
+          DOCKER_MESSAGES.IMAGE_INFO(imageInfo!),
         parse_mode: "Markdown"
       })
       addMessage(completedMessage.message_id)
