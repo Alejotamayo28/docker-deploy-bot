@@ -1,17 +1,15 @@
 import { bot } from "../..";
-import { imagesLogo } from "../../config/images";
 import { DOCKER_MESSAGES } from "../../constants/messages";
 import { DockerImageTag } from "../../docker/interfaces/docker-types";
-import { launchEC2Instance, terminateEC2Instance, waitForInstanceReady } from "../../services/ec2/aws.service";
+import { launchEC2Instance, terminateEC2Instance, waitForInstanceEC2Ready } from "../../services/ec2/aws.service";
+import { imagesLogo } from "../../services/s3/image-assets";
 import { addMessage, deleteAllMessages } from "../messageCleaner";
-
 
 export async function setUpDockerImageHandler(images: DockerImageTag[]) {
   bot.action(/^select_image:(\d+)$/, async (ctx) => {
     try {
       const imageId = ctx.match[1];
-      //await ctx.answerCbQuery(`Imagen seleccionada: ${imageId}`);
-      const inlineMessage = await ctx.reply(DOCKER_MESSAGES.IMAGE_ACTION_PROMPT(imageId), {
+      const { message_id } = await ctx.reply(DOCKER_MESSAGES.IMAGE_ACTION_PROMPT(imageId), {
         reply_markup: {
           inline_keyboard: [
             [
@@ -21,13 +19,11 @@ export async function setUpDockerImageHandler(images: DockerImageTag[]) {
           ],
         },
       });
-      addMessage(inlineMessage.message_id)
+      addMessage(message_id)
     } catch (error) {
       console.error("Error: ", error);
     }
   });
-
-
 
   bot.action(/^run_image:(\d+)$/, async (ctx) => {
     await deleteAllMessages(ctx)
@@ -38,7 +34,7 @@ export async function setUpDockerImageHandler(images: DockerImageTag[]) {
       });
       const instanceId = await launchEC2Instance(imageInfo!)
       await ctx.reply(`🚀 Instancia EC2 ejecutada exitosamente con el id: ${instanceId}`)
-      await waitForInstanceReady(instanceId, ctx)
+      await waitForInstanceEC2Ready(instanceId, ctx)
       return await ctx.reply(
         DOCKER_MESSAGES.IMAGE_ACTION_PROMPT(imageId),
         {
@@ -54,14 +50,7 @@ export async function setUpDockerImageHandler(images: DockerImageTag[]) {
     }
   });
 
-
-
-
   bot.action(/^stop_image:(\d+)$/, async (ctx) => {
-    const imageId = ctx.match[1];
-    const imageInfo = images.find((image: DockerImageTag) => {
-      return image.id == Number(imageId);
-    });
     await terminateEC2Instance()
     await ctx.reply(`✅ El contenedor ha sido detenido.`);
   });
@@ -73,17 +62,28 @@ export async function setUpDockerImageHandler(images: DockerImageTag[]) {
       const imageInfo = images.find((image: DockerImageTag) => {
         return image.id == Number(imageId);
       });
-      const infoMessage = await ctx.reply(`Informacion imagen: ${imageId}\n`
-        + DOCKER_MESSAGES.IMAGE_INFO(imageInfo!), {
-        parse_mode: "Markdown",
-      });
-      const photoMessage = await ctx.replyWithPhoto({
-        url: imagesLogo[imageInfo!.name],
-      }, { caption: "E-commerce" })
-      addMessage(infoMessage.message_id)
-      addMessage(photoMessage.message_id)
+      const completedMessage = await ctx.replyWithPhoto({
+        url: imagesLogo[imageInfo!.name]
+      }, {
+        caption:
+          `Informacion imagen: ${imageId}\n` +
+          + DOCKER_MESSAGES.IMAGE_INFO(imageInfo!),
+        parse_mode: "Markdown"
+      })
+      addMessage(completedMessage.message_id)
     } catch (error) {
       console.error("Error: ", error);
     }
   });
 }
+
+/*
+      const infoMessage = await ctx.reply(`Informacion imagen: ${imageId}\n`
+        + DOCKER_MESSAGES.IMAGE_INFO(imageInfo!), {
+        parse_mode: "Markdown",
+ 
+      });
+      const photoMessage = await ctx.replyWithPhoto({
+        url: imagesLogo[imageInfo!.name],
+      }, { caption: `${imageInfo!.name}` })
+*/

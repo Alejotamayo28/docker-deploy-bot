@@ -6,9 +6,3 @@ export interface DockerImageTag {
   last_updater_username: string;
   tag_status: string;
 }
-
-export interface ProcessResult {
-  stdout: string,
-  stderr: string,
-  code: number
-}

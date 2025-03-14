@@ -1,10 +1,12 @@
-import { DescribeInstanceStatusCommand, RunInstancesCommand, RunInstancesCommandInput, TerminateInstancesCommand, TerminateInstancesCommandInput } from '@aws-sdk/client-ec2'
+import {
+  DescribeInstanceStatusCommand, RunInstancesCommand, RunInstancesCommandInput,
+  TerminateInstancesCommand, TerminateInstancesCommandInput
+} from '@aws-sdk/client-ec2'
 import { Context } from 'telegraf'
 import { config } from '../../config/env.config'
 import { DockerImageTag } from '../../docker/interfaces/docker-types'
 import { generateDockerSetupScript } from './docker-setup'
 import { AWSclient } from '../clien'
-
 
 let instanceId: string | undefined;
 
@@ -70,7 +72,7 @@ export async function terminateEC2Instance(): Promise<boolean> {
   }
 }
 
-export async function waitForInstanceReady(instanceId: string, ctx: Context): Promise<void> {
+export async function waitForInstanceEC2Ready(instanceId: string, ctx: Context): Promise<void> {
   try {
     const message = await ctx.reply('🚀 Levantando contenedor... 🐳')
     while (true) {
