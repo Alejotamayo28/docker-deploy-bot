@@ -38,7 +38,7 @@ export class DockerEngineClient {
   async stopContainer(image: DockerImageTag): Promise<void> {
     try {
       const { stdout: containerId } = await execPromise(
-        `sudo docker ps -q -f name=${image.name}`,
+        ` docker ps -q -f name=${image.name}`,
       );
       const trimmedContainerId = containerId.trim();
       if (!trimmedContainerId) {
@@ -46,18 +46,12 @@ export class DockerEngineClient {
           `⚠️ No se encontró un contenedor activo para ${image.name}`,
         );
       }
-      console.log(`Deteniendo contenedor: ${trimmedContainerId}`);
-      await execPromise(`sudo docker stop ${trimmedContainerId}`);
-      console.log(`✅ Contenedor detenido`);
-      console.log(`Eliminando contenedor: ${trimmedContainerId}`);
-      await execPromise(`sudo docker rm ${trimmedContainerId}`);
-      console.log(`✅ Contenedor eliminado`);
+      await execPromise(`docker stop ${trimmedContainerId}`);
+      await execPromise(`docker rm ${trimmedContainerId}`);
       const { stdout: imageId } = await execPromise(
-        `sudo docker images --format "{{.ID}}" --filter=reference=${config.DOCKER_USERNAME}/projects:${image.name}`,
+        `docker images --format "{{.ID}}" --filter=reference=${config.DOCKER_USERNAME}/projects:${image.name}`,
       );
-      console.log(`Eliminando imagen: ${imageId}`);
-      await execPromise(`sudo docker rmi ${imageId}`);
-      console.log(`✅ Imagen eliminada`);
+      await execPromise(`docker rmi ${imageId}`);
     } catch (error) {
       console.error(`❌ Error al detener/eliminar el contenedor:`, error);
       throw error;

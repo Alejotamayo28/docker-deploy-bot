@@ -2,12 +2,13 @@ import { spawn } from "child_process"
 import { config } from "../../config/env.config"
 import { DockerImageTag, ProcessResult } from "../interfaces/docker-types"
 
-
 export class DockerProcessHelper {
   private static async runProcess(command: string[], inputText?: string): Promise<ProcessResult> {
     console.log(`[DockerProcessHelper] Ejecutando comando: docker ${command.join(" ")}`)
     return await new Promise((resolve, reject) => {
-      const dockerProcess = spawn("sudo", ["docker", ...command])
+      // 'Spawn'. Metodo del modulo 'child_process' de NodeJS, permite ejecutar procesos en un subproceso sin bloquear el event loop.
+      // Util para ejecutar comandos del sistema o procesos externos.
+      const dockerProcess = spawn("docker", [...command])
       let stdout = ''
       let stderr = ''
       if (inputText) {
@@ -22,8 +23,8 @@ export class DockerProcessHelper {
       })
       dockerProcess.on("close", (code) => {
         console.log(`[DockerProcessHelper] Ejecucion comando completada, con la salidas: ${code}`)
-        if (stdout) console.log('Stdout: ', stdout)
-        if (stderr) console.log('Stderr: ', stderr)
+        if (stdout) console.log('Esta es la salida del Stdout: ', stdout)
+        if (stderr) console.log('Esta es la salida del Stderr: ', stderr)
         resolve({
           stdout,
           stderr,
@@ -57,7 +58,7 @@ export class DockerProcessHelper {
   static async downlaod(port: number, imageInfo: DockerImageTag) {
     try {
       const result = await this.runProcess([
-        "run", "-d","-p",
+        "run", "-d", "-p",
         `${port}:${port}`,
         "--name",
         imageInfo.name,

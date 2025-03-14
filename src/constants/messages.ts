@@ -15,7 +15,7 @@ export const DOCKER_MESSAGES = {
     return `¿Qué te gustaría hacer con la imagen ${imageId}?`
   },
   IMAGE_EXECUTING: (imageId: string) => {
-    return `Ejecutando imagen: ${imageId}...`
+    return `⚙️ Instalando Docker en la instancia EC2... 🐳`
   },
   IMAGE_ON_EXECUTION: (imageName: string) => {
     return `🚀 Contenedor: ${imageName}\nEn ejecucion.`

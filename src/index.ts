@@ -4,7 +4,9 @@ import { setupStartCommand } from "./bot/commands/start.commands";
 
 dotenv.config();
 
-export const bot = new Telegraf(process.env.BOT_TOKEN!);
+export const bot = new Telegraf(process.env.BOT_TOKEN!, {
+  handlerTimeout: 190000,
+});
 
 setupStartCommand();
 
