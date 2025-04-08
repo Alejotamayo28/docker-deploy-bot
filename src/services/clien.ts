@@ -1,10 +1,12 @@
 import { EC2Client } from "@aws-sdk/client-ec2";
-import { config } from '../config/env.config'
+import { EnvProcess } from "..";
 
-export const AWSclient = new EC2Client({
-  region: config.AWS_REGION!,
-  credentials: {
-    accessKeyId: config.AWS_ACCESS_KEY_ID!,
-    secretAccessKey: config.AWS_SECRET_ACCESS_KEY!
-  }
-})
+export function createEc2Client(env: EnvProcess) {
+  return new EC2Client({
+    region: env.AWS_REGION,
+    credentials: {
+      accessKeyId: env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: env.AWS_SECRET_ACCESS_KEY
+    }
+  });
+}

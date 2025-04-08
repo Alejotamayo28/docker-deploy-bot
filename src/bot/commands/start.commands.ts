@@ -1,21 +1,25 @@
-import { Context } from "telegraf";
-import { checkValidateId } from "../../auth/admin.auth";
+import { Context, Telegraf } from "telegraf";
+import { checkValidateId } from "../../auth/admin.auth"; import { EnvProcess } from "../..";
 import { fetchDockerImages } from "../../docker/clients/docker-hub-client";
-import { bot } from "../..";
 import { createDockerImagesKeyboard } from "../keyboards/docker-images.keyboard";
-import { setUpDockerImageHandler } from "../handlers/docker-image-handler";
 import { addMessage } from "../messageCleaner";
 
-export function setupStartCommand() {
-  bot.command("start", async (ctx: Context) => {
-    if (checkValidateId(ctx.from!.id)) {
-      const images = await fetchDockerImages();
-      const keyboard = createDockerImagesKeyboard(images);
-      const imagesMessage = await ctx.reply("Selecciona una de las siguientes imagenes: ", {
+export async function setupStartCommand(bot: Telegraf, Env: EnvProcess): Promise<void> {
+  bot.command('start', async (ctx: Context) => {
+    try {
+      if (!checkValidateId(ctx.from!.id, Env.ADMIN_ID)) {
+        await ctx.reply("No tienes permiso para usar este bot. Contacta al administrador.");
+      }
+      await setupStartCommand(bot, Env)
+      const imagesTag = await fetchDockerImages(Env)
+      const keyboard = createDockerImagesKeyboard(imagesTag)
+      const imagesMessage = await ctx.reply("Selecciona una de las siguientes imágenes: ", {
         reply_markup: keyboard,
       });
       addMessage(imagesMessage.message_id)
-      return setUpDockerImageHandler(images)
+    } catch (error) {
+      console.error("Error en el comando start:", error);
+      await ctx.reply("Ha ocurrido un error al iniciar el bot. Por favor, inténtalo más tarde.");
     }
   });
 }
