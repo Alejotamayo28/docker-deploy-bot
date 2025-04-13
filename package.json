@@ -13,6 +13,7 @@
   "type": "commonjs",
   "description": "",
   "dependencies": {
+    "@aws-sdk/client-cloudwatch": "^3.787.0",
     "@aws-sdk/client-ec2": "^3.767.0",
     "axios": "^1.7.9",
     "dotenv": "^16.4.7",

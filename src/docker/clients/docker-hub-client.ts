@@ -1,6 +1,6 @@
 import axios from "axios";
 import { DockerImageTag } from "../interfaces/docker-types";
-import { EnvProcess } from "../..";
+import { EnvProcess } from "../../config/env.process";
 
 export async function fetchDockerImages(Env: EnvProcess): Promise<DockerImageTag[]> {
   const url = `https://hub.docker.com/v2/repositories/${Env.DOCKER_USERNAME}/${Env.DOCKER_REPO}/tags/`;

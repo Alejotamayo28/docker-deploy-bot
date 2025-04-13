@@ -1,11 +1,14 @@
 import {
-  DescribeInstanceStatusCommand, RunInstancesCommand, RunInstancesCommandInput,
+  DescribeInstancesCommand,
+  DescribeInstancesCommandOutput,
+  DescribeInstanceStatusCommand, EC2Client, RunInstancesCommand,
   TerminateInstancesCommand, TerminateInstancesCommandInput
 } from '@aws-sdk/client-ec2'
 import { DockerImageTag } from '../../docker/interfaces/docker-types'
 import { generateDockerSetupScript } from './docker-setup'
-import { EnvProcess } from '../..'
 import { createEc2Client } from '../clien'
+import { EnvProcess } from '../../config/env.process';
+import { Ec2Config } from './ec2-configs';
 
 let instanceId: string | undefined;
 
@@ -17,30 +20,9 @@ export async function launchEC2Instance
       password: Env.DOCKER_PASSWORD!,
       image: dockerImage
     })
-    const params: RunInstancesCommandInput = {
-      ImageId: 'ami-04b4f1a9cf54c11d0',
-      InstanceType: 't2.micro',
-      MinCount: 1,
-      MaxCount: 1,
-      UserData: dockerSetupScript, SubnetId: 'subnet-0dab0123269f15b16',
-      SecurityGroupIds: ['sg-0f444c6a7432cb924'],
-      KeyName: 'DockerBot-Key',
-      TagSpecifications: [
-        {
-          ResourceType: 'instance',
-          Tags: [
-            {
-              Key: 'Name',
-              Value: `DockerBot-${dockerImage.name}`
-            },
-            {
-              Key: 'DockerImage',
-              Value: dockerImage.name
-            }
-          ]
-        }
-      ]
-    }
+    const params = Ec2Config.Production({
+      dockerImageTag: dockerImage, dockerBash: dockerSetupScript
+    })
     const command = new RunInstancesCommand(params)
     const Ec2Client = createEc2Client(Env)
     const result = await Ec2Client.send(command)
@@ -56,12 +38,11 @@ export async function launchEC2Instance
   }
 }
 
-
 export async function terminateEC2Instance
-  (Env: EnvProcess): Promise<boolean> {
+  (Env: EnvProcess, instanceId: string): Promise<boolean> {
   try {
     const params: TerminateInstancesCommandInput = {
-      InstanceIds: [instanceId!]
+      InstanceIds: [instanceId]
     }
     const command = new TerminateInstancesCommand(params)
     const Ec2Client = createEc2Client(Env)
@@ -72,8 +53,6 @@ export async function terminateEC2Instance
     throw error
   }
 }
-
-
 
 export async function waitForInstanceEC2Ready
   (Env: EnvProcess, instanceId: string): Promise<void> {
@@ -97,3 +76,12 @@ export async function waitForInstanceEC2Ready
   }
 }
 
+export async function getRunningEC2Instances(ec2Client: EC2Client):
+  Promise<DescribeInstancesCommandOutput> {
+  return await ec2Client.send(new DescribeInstancesCommand({
+    Filters: [{
+      Name: "instance-state-name",
+      Values: ["running"]
+    }]
+  }))
+}
