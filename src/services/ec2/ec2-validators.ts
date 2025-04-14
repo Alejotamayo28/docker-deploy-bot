@@ -2,7 +2,8 @@ import { DescribeInstancesCommandOutput } from "@aws-sdk/client-ec2";
 import { Context } from "telegraf";
 import { createMainMenu } from "../../bot/keyboards/main-menu.keyboard";
 
-export async function validateEC2InstancesAvailability(instances: DescribeInstancesCommandOutput, ctx: Context) {
+export async function validateEC2InstancesAvailability(
+  instances: DescribeInstancesCommandOutput, ctx: Context) {
   if (instances.Reservations?.length === 0 || !instances.Reservations) {
     const keyboard = createMainMenu()
     await ctx.reply('No se encontraron reservaciones de EC2 en tu cuenta', {

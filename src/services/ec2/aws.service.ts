@@ -10,7 +10,6 @@ import { createEc2Client } from '../clien'
 import { EnvProcess } from '../../config/env.process';
 import { Ec2Config } from './ec2-configs';
 
-let instanceId: string | undefined;
 
 export async function launchEC2Instance
   (Env: EnvProcess, dockerImage: DockerImageTag): Promise<string> {
@@ -26,7 +25,7 @@ export async function launchEC2Instance
     const command = new RunInstancesCommand(params)
     const Ec2Client = createEc2Client(Env)
     const result = await Ec2Client.send(command)
-    instanceId = result.Instances?.[0].InstanceId
+    const instanceId = result.Instances?.[0].InstanceId
     if (!instanceId) {
       throw new Error('No se pudo obtener el ID de la instancia')
     }

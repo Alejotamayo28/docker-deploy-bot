@@ -10,14 +10,13 @@ export class CloudWatchFormatter {
     let text = 'Métricas de las instancias EC2:\n\n';
     for (const instanceId in groupedMetrics) {
       text += `📌 Instancia: ${instanceId}\n`;
-
       groupedMetrics[instanceId].forEach((metric, index) => {
-        text += `🔹 Métrica ${index + 1}:\n` +
-          `   CPU: avg=${metric.cpuUtilization.average}% max=${metric.cpuUtilization.max}%\n` +
-          `   Disk Read: sum=${metric.diskRead.sum} ops\n` +
-          `   Disk Write: sum=${metric.diskWrite.sum} ops\n` +
-          `   Network: in=${metric.networkInOut.in} bytes, out=${metric.networkInOut.out} bytes\n\n`;
-      });
+        text += `🔹 *Métrica ${index + 1}:*\n` +
+          `   \`CPU:\`   🟢 avg=\`${metric.cpuUtilization.average.toFixed(2)}%\`  🔴 max=\`${metric.cpuUtilization.max.toFixed(2)}%\`\n` +
+          `   \`Disk Read:\`  📥 sum=\`${metric.diskRead.sum} ops\`\n` +
+          `   \`Disk Write:\` 📤 sum=\`${metric.diskWrite.sum} ops\`\n` +
+          `   \`Network:\n     🌐 IN=\`${metric.networkInOut.in} bytes\`  🚀 OUT=\`${metric.networkInOut.out} bytes\`\n\n`;
+      })
     }
     return text;
   }

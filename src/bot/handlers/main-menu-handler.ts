@@ -3,13 +3,13 @@ import { fetchDockerImages } from "../../docker/clients/docker-hub-client";
 import { EnvProcess } from "../../config/env.process";
 import { createEc2Client } from "../../services/clien";
 import { getEC2Metrics } from "../../services/cloud-watch/cloudwatch-service";
-import { CloudWatchFormatter } from "../../services/cloud-watch/clodwatch-formatter";
 import { getRunningEC2Instances } from "../../services/ec2/aws.service";
 import { validateEC2InstancesAvailability } from "../../services/ec2/ec2-validators";
 import { BuildImagesKeyboard } from "../keyboards/docker-images.keyboard";
 import { buildInstancesKeyboard } from "../keyboards/ec2-instances.keyboard";
+import { CloudWatchFormatter } from "../../services/cloud-watch/cloudwatch-formatter";
 
-export async function mainMenuHandlers(bot: Telegraf, env: EnvProcess) {
+export async function mainMenuHandlers(env: EnvProcess, bot: Telegraf,) {
 
   bot.action('launch_instance', async (ctx) => {
     try {

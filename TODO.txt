@@ -1,0 +1,16 @@
+1. Mensaje para cuando se este creando una instancia
+  el timing es de 30 segundos
+
+2. Borrar mensajes, evitar tanta redundancia entre el chat
+
+3. Acomdar el nombre de los ficheros, la pababra docker no
+  va
+
+4. Info imagen por hacer, buton dentro del
+  main-menu.keyboard.ts y su respestivo handler
+
+5. Acomodar los bot.actoin sigan una estructura
+  'instance_stop', por ejemplo
+
+6. Acomdar los bot.actoin dentro de los handlers del 
+  menu principal
