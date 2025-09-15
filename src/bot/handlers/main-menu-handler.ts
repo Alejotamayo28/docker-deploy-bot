@@ -15,7 +15,7 @@ export async function mainMenuHandlers(env: EnvProcess, bot: Telegraf,) {
     try {
       const imagesTag = await fetchDockerImages(env)
       const keyboard = BuildImagesKeyboard(imagesTag, "imageRunKeyboard")
-      return await ctx.reply(keyboard.message, {
+      await ctx.reply(keyboard.message, {
         reply_markup: keyboard.keyboard,
       });
     } catch (error) {
@@ -30,7 +30,7 @@ export async function mainMenuHandlers(env: EnvProcess, bot: Telegraf,) {
       await validateEC2InstancesAvailability(instances, ctx)
       const ec2Metrics = await getEC2Metrics(env)
       const ec2MetricsText = CloudWatchFormatter.metricsToText(ec2Metrics)
-      return await ctx.reply(ec2MetricsText, { parse_mode: "Markdown" })
+      await ctx.reply(ec2MetricsText, { parse_mode: "Markdown" })
     } catch (error) {
       console.error('Error: ', error)
     }
@@ -42,7 +42,7 @@ export async function mainMenuHandlers(env: EnvProcess, bot: Telegraf,) {
       const instances = await getRunningEC2Instances(Ec2Client)
       await validateEC2InstancesAvailability(instances, ctx)
       const keyboard = buildInstancesKeyboard(instances, "instanceStopKeyboard")
-      return await ctx.reply(keyboard.message, {
+      await ctx.reply(keyboard.message, {
         reply_markup: keyboard.keyboard
       })
     } catch (error) {
@@ -56,7 +56,7 @@ export async function mainMenuHandlers(env: EnvProcess, bot: Telegraf,) {
       const instances = await getRunningEC2Instances(Ec2Client)
       await validateEC2InstancesAvailability(instances, ctx)
       const keyboard = buildInstancesKeyboard(instances, "instanceActiveKeyboard")
-      return await ctx.reply(keyboard.message, {
+      await ctx.reply(keyboard.message, {
         reply_markup: keyboard.keyboard
       })
     } catch (error) {

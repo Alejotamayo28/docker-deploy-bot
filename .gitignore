@@ -29,3 +29,7 @@ tmp/
 
 # Ignorar node_modules (si es un proyecto con Node.js)
 node_modules/
+
+#Ignorar wrangler 
+wrangler.toml
+
